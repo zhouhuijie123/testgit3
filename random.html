@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智慧燃气 · 随机站号路径</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at top, #0a2a43, #041423);
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            color: #ffffff;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 40px 60px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 153, 255, 0.3);
+        }
+
+        .title {
+            font-size: 22px;
+            letter-spacing: 2px;
+            color: #7ecbff;
+            margin-bottom: 20px;
+        }
+
+        .path {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin: 20px 0;
+            color: #ffffff;
+        }
+
+        .hint {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-top: 20px;
+        }
+
+        .refresh {
+            margin-top: 30px;
+            padding: 10px 24px;
+            font-size: 14px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #2aa7ff, #0066ff);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .refresh:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="title">系统日志 · 随机路径</div>
+    <div class="path" id="path">加载中...</div>
+    <button class="refresh" onclick="generatePath()">重新生成</button>
+    <div class="hint">每次访问或刷新都会随机生成</div>
+</div>
+
+<script>
+    const paths = [
+        "A1 → B2 → C1",
+        "A3 → B3 → C2",
+        "A2 → B1 → C2",
+        "A1 → B3 → C1"
+    ];
+
+    function generatePath() {
+        const index = Math.floor(Math.random() * paths.length);
+        document.getElementById("path").innerText = paths[index];
+    }
+
+    // 页面加载时自动生成
+    generatePath();
+</script>
+
+</body>
+</html>
