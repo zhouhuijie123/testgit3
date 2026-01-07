@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>智慧燃气运行监测系统</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    background:
+        radial-gradient(circle at top, #0b2a4a 0%, #040b16 60%, #000 100%);
+    color: #e6f4ff;
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* 背景扫描线 */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    pointer-events: none;
+}
+
+/* 顶部 LOGO 区 */
+.header {
+    position: absolute;
+    top: 24px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+.header img {
+    width: 180px;
+    opacity: 0.18;
+}
+
+/* 主容器 */
+.container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 主面板 */
+.panel {
+    width: 90%;
+    max-width: 420px;
+    padding: 50px 30px 40px;
+    border: 1px solid rgba(0,200,255,0.3);
+    border-radius: 14px;
+    background: rgba(5,20,40,0.75);
+    box-shadow: 0 0 30px rgba(0,200,255,0.15);
+    text-align: center;
+}
+
+/* 标题 */
+.title-cn {
+    font-size: 22px;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+}
+.title-en {
+    font-size: 12px;
+    opacity: 0.6;
+    letter-spacing: 2px;
+    margin-bottom: 26px;
+}
+
+/* 扫描圆环 */
+.scanner {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 20px auto;
+    position: relative;
+    border: 2px solid rgba(0,200,255,0.2);
+}
+.scanner::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 2px dashed rgba(0,200,255,0.6);
+    animation: rotate 2s linear infinite;
+}
+.scanner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,200,255,0.35), transparent 65%);
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 状态文本 */
+.status-text {
+    margin-top: 20px;
+    font-size: 16px;
+    letter-spacing: 2px;
+    animation: blink 1.4s infinite;
+}
+
+@keyframes blink {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* 结果 */
+.result {
+    display: none;
+    margin-top: 30px;
+    animation: pop 0.6s ease-out;
+}
+@keyframes pop {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.result-label {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.result-value {
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* 状态颜色 */
+.green { color: #4cff9a; text-shadow: 0 0 12px rgba(76,255,154,0.6); }
+.blue  { color: #4fd2ff; text-shadow: 0 0 12px rgba(79,210,255,0.6); }
+.red   { color: #ff4c4c; text-shadow: 0 0 14px rgba(255,76,76,0.8); }
+</style>
+</head>
+
+<body>
+
+<!-- 顶部 LOGO -->
+<div class="header">
+    <img src="logo.png" alt="Company Logo">
+</div>
+
+<div class="container">
+    <div class="panel">
+        <div class="title-cn">智慧燃气运行监测系统</div>
+        <div class="title-en">SMART GAS STATUS MONITOR</div>
+
+        <div class="scanner" id="scanner"></div>
+
+        <div class="status-text" id="statusText">
+            系统检测中 · 数据扫描…
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-label">▶ 状态判定结果</div>
+            <div class="result-value" id="resultValue"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const states = [
+    { text: "白天工况", class: "green", weight: 50 },
+    { text: "可远程处理", class: "blue",  weight: 30 },
+    { text: "首次异常", class: "red",   weight: 20 }
+];
+
+function randomState(list) {
+    const total = list.reduce((s, i) => s + i.weight, 0);
+    let r = Math.random() * total;
+    for (let i of list) {
+        if (r < i.weight) return i;
+        r -= i.weight;
+    }
+}
+
+setTimeout(() => {
+    const state = randomState(states);
+
+    document.getElementById("scanner").style.display = "none";
+    document.getElementById("statusText").innerText = "检测完成";
+
+    const result = document.getElementById("result");
+    const value  = document.getElementById("resultValue");
+    value.className = "result-value " + state.class;
+    value.innerText = state.text;
+
+    result.style.display = "block";
+}, 2800);
+</script>
+
+</body>
+</html>
