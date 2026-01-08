@@ -180,25 +180,27 @@ let timer = setInterval(()=>{
     }
 },1000);
 
+<script>
 function submitOrder(){
-    if(remaining<=0) return;
+    if (remaining <= 0) return;
 
-    const station = station.value.trim();
-    const problem = problem.value.trim();
-    const action = action.value.trim();
+    const stationValue = document.getElementById("station").value.trim();
+    const problemValue = document.getElementById("problem").value.trim();
+    const actionValue  = document.getElementById("action").value.trim();
 
     const ok =
-        validStations.includes(station) &&
-        validProblems.includes(problem) &&
-        validActions.includes(action);
+        validStations.includes(stationValue) &&
+        validProblems.includes(problemValue) &&
+        validActions.includes(actionValue);
 
-    if(ok){
+    if (ok) {
         clearInterval(timer);
         showRecovery();
-    }else{
+    } else {
         alert("填写有误，请填写正确内容！");
     }
 }
+</script>
 
 function showRecovery(){
     const overlay = document.getElementById("overlay");
@@ -216,3 +218,4 @@ function showRecovery(){
 
 </body>
 </html>
+
