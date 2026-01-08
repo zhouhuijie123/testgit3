@@ -23,7 +23,7 @@
             padding: 40px 60px;
             text-align: center;
             box-shadow: 0 0 30px rgba(0, 153, 255, 0.3);
-            min-width: 320px;
+            min-width: 360px;
         }
 
         .title {
@@ -31,6 +31,12 @@
             letter-spacing: 2px;
             color: #7ecbff;
             margin-bottom: 20px;
+        }
+
+        .countdown {
+            font-size: 64px;
+            font-weight: bold;
+            margin: 20px 0;
         }
 
         .path {
@@ -41,33 +47,10 @@
             display: none;
         }
 
-        .countdown {
-            font-size: 64px;
-            font-weight: bold;
-            margin: 20px 0;
-            color: #ffffff;
-        }
-
         .hint {
             font-size: 14px;
-            opacity: 0.7;
+            opacity: 0.6;
             margin-top: 20px;
-        }
-
-        .refresh {
-            margin-top: 30px;
-            padding: 10px 24px;
-            font-size: 14px;
-            border: none;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #2aa7ff, #0066ff);
-            color: #fff;
-            cursor: pointer;
-            display: none;
-        }
-
-        .refresh:hover {
-            opacity: 0.85;
         }
     </style>
 </head>
@@ -76,14 +59,8 @@
 <div class="card">
     <div class="title" id="title">系统即将启动</div>
     <div class="countdown" id="countdown">请做好准备</div>
-
     <div class="path" id="path"></div>
-
-    <button class="refresh" id="refreshBtn" onclick="startSequence()">
-        重新生成
-    </button>
-
-    <div class="hint" id="hint">每次访问或刷新都会随机生成</div>
+    <div class="hint">系统每 5 秒自动刷新路径</div>
 </div>
 
 <script>
@@ -94,42 +71,50 @@
         "A1 → B3 → C1"
     ];
 
-    let countdownSteps = ["请做好准备", "3", "2", "1"];
-    let stepIndex = 0;
+    const countdownSteps = ["请做好准备", "3", "2", "1"];
+    let countdownIndex = 0;
+    let countdownTimer = null;
+    let cycleTimer = null;
 
-    function startSequence() {
-        // 重置界面
-        document.getElementById("path").style.display = "none";
-        document.getElementById("refreshBtn").style.display = "none";
+    function startCycle() {
+        // 初始化界面
         document.getElementById("title").innerText = "系统即将启动";
         document.getElementById("countdown").style.display = "block";
+        document.getElementById("path").style.display = "none";
 
-        stepIndex = 0;
-        document.getElementById("countdown").innerText = countdownSteps[stepIndex];
+        countdownIndex = 0;
+        document.getElementById("countdown").innerText = countdownSteps[countdownIndex];
 
-        const timer = setInterval(() => {
-            stepIndex++;
+        clearInterval(countdownTimer);
 
-            if (stepIndex < countdownSteps.length) {
-                document.getElementById("countdown").innerText = countdownSteps[stepIndex];
+        countdownTimer = setInterval(() => {
+            countdownIndex++;
+
+            if (countdownIndex < countdownSteps.length) {
+                document.getElementById("countdown").innerText = countdownSteps[countdownIndex];
             } else {
-                clearInterval(timer);
-                generatePath();
+                clearInterval(countdownTimer);
+                showRandomPath();
             }
-        }, 800); // 每一步 0.8 秒，年会节奏刚好
+        }, 700); // 倒计时节奏
     }
 
-    function generatePath() {
+    function showRandomPath() {
         const index = Math.floor(Math.random() * paths.length);
-        document.getElementById("countdown").style.display = "none";
         document.getElementById("title").innerText = "系统日志 · 随机路径";
+        document.getElementById("countdown").style.display = "none";
         document.getElementById("path").innerText = paths[index];
         document.getElementById("path").style.display = "block";
-        document.getElementById("refreshBtn").style.display = "inline-block";
+    }
+
+    function startAutoLoop() {
+        startCycle();
+        clearInterval(cycleTimer);
+        cycleTimer = setInterval(startCycle, 5000); // 每 5 秒一轮
     }
 
     // 页面加载自动启动
-    startSequence();
+    startAutoLoop();
 </script>
 
 </body>
