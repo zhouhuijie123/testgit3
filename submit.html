@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>智慧燃气 · 工单提交</title>
+<title>智慧燃气 · 工单提交系统</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -38,12 +38,19 @@ body{
 }
 .title{
     text-align:center;
-    font-size:24px;
+    font-size:22px;
     color:#7ecbff;
-    margin-bottom:26px;
+    margin-bottom:10px;
     letter-spacing:2px;
 }
-.item{margin-bottom:20px;}
+.sub-title{
+    text-align:center;
+    font-size:13px;
+    opacity:.6;
+    margin-bottom:26px;
+}
+
+.item{margin-bottom:22px;}
 .item label{
     display:block;
     font-size:14px;
@@ -72,9 +79,9 @@ body{
     letter-spacing:2px;
 }
 .hint{
-    margin-top:16px;
+    margin-top:18px;
     font-size:12px;
-    opacity:.5;
+    opacity:.45;
     text-align:center;
 }
 
@@ -124,25 +131,27 @@ body{
 <div class="timer" id="timer">剩余时间：10:00</div>
 
 <div class="panel">
-    <div class="title">虚拟工单提交</div>
+    <div class="title">虚拟工单提交系统</div>
+    <div class="sub-title">请依据前序解码结果填写正确信息</div>
 
     <div class="item">
         <label>站号</label>
-        <input id="stationInput" placeholder="010507">
+        <input id="stationInput" autocomplete="off">
     </div>
 
     <div class="item">
         <label>问题类型</label>
-        <input id="problemInput" placeholder="数据异常 / 设备异常 / 压力异常">
+        <input id="problemInput" autocomplete="off">
     </div>
 
     <div class="item">
         <label>处置类型</label>
-        <input id="actionInput" placeholder="不派单 / 现场处置 / 及时校验模块">
+        <input id="actionInput" autocomplete="off">
     </div>
 
     <button class="btn" id="submitBtn">提交工单</button>
-    <div class="hint">请在 10 分钟内完成工单提交</div>
+
+    <div class="hint">系统将自动校验填写内容</div>
 </div>
 
 <!-- 成功动画 -->
@@ -159,7 +168,7 @@ body{
 </div>
 
 <script>
-/* 合法值 */
+/* 合法值（不对外展示） */
 const VALID_STATIONS = ["010507","030608","020108","010607"];
 const VALID_PROBLEMS = ["数据异常","设备异常","压力异常"];
 const VALID_ACTIONS  = ["不派单","现场处置","及时校验模块"];
