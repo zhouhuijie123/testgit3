@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>智慧燃气 · 工单提交</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{
     margin:0;
@@ -24,9 +25,9 @@ body{
     font-size:16px;
     color:#ffdd88;
     letter-spacing:1px;
-    opacity:.9;
 }
 
+/* 表单 */
 .panel{
     width:440px;
     background:rgba(255,255,255,.06);
@@ -77,7 +78,7 @@ body{
     text-align:center;
 }
 
-/* 恢复动画 */
+/* 成功动画 */
 .overlay{
     position:fixed;
     inset:0;
@@ -117,6 +118,7 @@ body{
 }
 </style>
 </head>
+
 <body>
 
 <div class="timer" id="timer">剩余时间：10:00</div>
@@ -126,19 +128,21 @@ body{
 
     <div class="item">
         <label>站号</label>
-        <input id="station" placeholder="010507">
-    </div>
-    <div class="item">
-        <label>问题类型</label>
-        <input id="problem" placeholder="数据异常 / 设备异常 / 压力异常">
-    </div>
-    <div class="item">
-        <label>处置类型</label>
-        <input id="action" placeholder="不派单 / 现场处置 / 及时校验模块">
+        <input id="stationInput" placeholder="010507">
     </div>
 
-    <button class="btn" id="submitBtn" onclick="submitOrder()">提交工单</button>
-    <div class="hint">请在规定时间内完成工单提交</div>
+    <div class="item">
+        <label>问题类型</label>
+        <input id="problemInput" placeholder="数据异常 / 设备异常 / 压力异常">
+    </div>
+
+    <div class="item">
+        <label>处置类型</label>
+        <input id="actionInput" placeholder="不派单 / 现场处置 / 及时校验模块">
+    </div>
+
+    <button class="btn" id="submitBtn">提交工单</button>
+    <div class="hint">请在 10 分钟内完成工单提交</div>
 </div>
 
 <!-- 成功音效 -->
@@ -146,76 +150,87 @@ body{
     <source src="success.mp3" type="audio/mpeg">
 </audio>
 
-<!-- 恢复动画 -->
+<!-- 成功动画 -->
 <div class="overlay" id="overlay">
     <div class="recover-box">
         <div class="recover-title">系统恢复中…</div>
         <div class="bar">
-            <div class="bar-inner" id="bar"></div>
+            <div class="bar-inner" id="barInner"></div>
         </div>
-        <div class="success" id="success">
+        <div class="success" id="successText">
             系统运行恢复正常<br>🎉 恭喜通关！
         </div>
     </div>
 </div>
 
 <script>
-/* 合法范围 */
-const validStations = ["010507","030608","020108","010607"];
-const validProblems = ["数据异常","设备异常","压力异常"];
-const validActions = ["不派单","现场处置","及时校验模块"];
+/* ===== 合法值 ===== */
+const VALID_STATIONS = ["010507","030608","020108","010607"];
+const VALID_PROBLEMS = ["数据异常","设备异常","压力异常"];
+const VALID_ACTIONS  = ["不派单","现场处置","及时校验模块"];
 
-/* 倒计时 10 分钟 */
-let remaining = 600;
-let timer = setInterval(()=>{
-    remaining--;
-    const m = String(Math.floor(remaining/60)).padStart(2,"0");
-    const s = String(remaining%60).padStart(2,"0");
-    document.getElementById("timer").innerText = `剩余时间：${m}:${s}`;
+/* ===== 倒计时 ===== */
+let remainingSeconds = 600;
+const timerEl = document.getElementById("timer");
+const submitBtn = document.getElementById("submitBtn");
 
-    if(remaining<=0){
-        clearInterval(timer);
-        document.getElementById("submitBtn").disabled = true;
+const countdownTimer = setInterval(() => {
+    remainingSeconds--;
+
+    const m = String(Math.floor(remainingSeconds / 60)).padStart(2,"0");
+    const s = String(remainingSeconds % 60).padStart(2,"0");
+    timerEl.innerText = `剩余时间：${m}:${s}`;
+
+    if (remainingSeconds <= 0) {
+        clearInterval(countdownTimer);
+        submitBtn.disabled = true;
         alert("操作超时，工单提交失败！");
     }
-},1000);
+}, 1000);
 
-<script>
-function submitOrder(){
-    if (remaining <= 0) return;
+/* ===== 提交逻辑 ===== */
+submitBtn.addEventListener("click", () => {
+    if (remainingSeconds <= 0) return;
 
-    const stationValue = document.getElementById("station").value.trim();
-    const problemValue = document.getElementById("problem").value.trim();
-    const actionValue  = document.getElementById("action").value.trim();
+    const stationValue = document.getElementById("stationInput").value.trim();
+    const problemValue = document.getElementById("problemInput").value.trim();
+    const actionValue  = document.getElementById("actionInput").value.trim();
 
-    const ok =
-        validStations.includes(stationValue) &&
-        validProblems.includes(problemValue) &&
-        validActions.includes(actionValue);
+    const isValid =
+        VALID_STATIONS.includes(stationValue) &&
+        VALID_PROBLEMS.includes(problemValue) &&
+        VALID_ACTIONS.includes(actionValue);
 
-    if (ok) {
-        clearInterval(timer);
-        showRecovery();
-    } else {
+    if (!isValid) {
         alert("填写有误，请填写正确内容！");
+        return;
     }
-}
-</script>
 
-function showRecovery(){
+    clearInterval(countdownTimer);
+    submitBtn.disabled = true;
+    showSuccess();
+});
+
+/* ===== 成功动画 ===== */
+function showSuccess(){
     const overlay = document.getElementById("overlay");
-    const bar = document.getElementById("bar");
-    const success = document.getElementById("success");
+    const bar = document.getElementById("barInner");
+    const successText = document.getElementById("successText");
     const audio = document.getElementById("successAudio");
 
-    overlay.style.display="flex";
+    overlay.style.display = "flex";
+
     audio.play().catch(()=>{});
 
-    setTimeout(()=>bar.style.width="100%",100);
-    setTimeout(()=>success.style.display="block",2600);
+    setTimeout(() => {
+        bar.style.width = "100%";
+    }, 100);
+
+    setTimeout(() => {
+        successText.style.display = "block";
+    }, 2600);
 }
 </script>
 
 </body>
 </html>
-
