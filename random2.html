@@ -60,7 +60,7 @@
     <div class="title" id="title">系统即将启动</div>
     <div class="countdown" id="countdown">请做好准备</div>
     <div class="path" id="path"></div>
-    <div class="hint">系统每 5 秒自动刷新路径</div>
+    <div class="hint">系统每 5 秒自动生成新路径</div>
 </div>
 
 <script>
@@ -72,49 +72,43 @@
     ];
 
     const countdownSteps = ["请做好准备", "3", "2", "1"];
-    let countdownIndex = 0;
-    let countdownTimer = null;
-    let cycleTimer = null;
+    const stepDuration = 700;   // 每个倒计时步骤 0.7 秒
+    const totalCycleTime = 5000; // 每轮总时长 5 秒
 
     function startCycle() {
-        // 初始化界面
+        // 初始化
         document.getElementById("title").innerText = "系统即将启动";
         document.getElementById("countdown").style.display = "block";
         document.getElementById("path").style.display = "none";
 
-        countdownIndex = 0;
-        document.getElementById("countdown").innerText = countdownSteps[countdownIndex];
+        let step = 0;
+        document.getElementById("countdown").innerText = countdownSteps[step];
 
-        clearInterval(countdownTimer);
-
-        countdownTimer = setInterval(() => {
-            countdownIndex++;
-
-            if (countdownIndex < countdownSteps.length) {
-                document.getElementById("countdown").innerText = countdownSteps[countdownIndex];
+        // 倒计时
+        const countdownTimer = setInterval(() => {
+            step++;
+            if (step < countdownSteps.length) {
+                document.getElementById("countdown").innerText = countdownSteps[step];
             } else {
                 clearInterval(countdownTimer);
-                showRandomPath();
+                showPath();
             }
-        }, 700); // 倒计时节奏
+        }, stepDuration);
     }
 
-    function showRandomPath() {
+    function showPath() {
         const index = Math.floor(Math.random() * paths.length);
         document.getElementById("title").innerText = "系统日志 · 随机路径";
         document.getElementById("countdown").style.display = "none";
         document.getElementById("path").innerText = paths[index];
         document.getElementById("path").style.display = "block";
+
+        // 等到本轮结束，再启动下一轮（关键）
+        setTimeout(startCycle, totalCycleTime);
     }
 
-    function startAutoLoop() {
-        startCycle();
-        clearInterval(cycleTimer);
-        cycleTimer = setInterval(startCycle, 5000); // 每 5 秒一轮
-    }
-
-    // 页面加载自动启动
-    startAutoLoop();
+    // 页面加载启动第一轮
+    startCycle();
 </script>
 
 </body>
