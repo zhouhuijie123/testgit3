@@ -40,7 +40,7 @@
         }
 
         .path {
-            font-size: 36px;
+            font-size: 38px;
             font-weight: bold;
             letter-spacing: 4px;
             margin: 20px 0;
@@ -60,7 +60,7 @@
     <div class="title" id="title">系统即将启动</div>
     <div class="countdown" id="countdown">请做好准备</div>
     <div class="path" id="path"></div>
-    <div class="hint">系统每 5 秒自动生成新路径</div>
+    <div class="hint">路径每 5 秒自动刷新</div>
 </div>
 
 <script>
@@ -72,43 +72,46 @@
     ];
 
     const countdownSteps = ["请做好准备", "3", "2", "1"];
-    const stepDuration = 700;   // 每个倒计时步骤 0.7 秒
-    const totalCycleTime = 5000; // 每轮总时长 5 秒
+    const stepDuration = 700;   // 倒计时节奏
+    const pathInterval = 5000;  // 路径刷新间隔
 
-    function startCycle() {
-        // 初始化
-        document.getElementById("title").innerText = "系统即将启动";
-        document.getElementById("countdown").style.display = "block";
-        document.getElementById("path").style.display = "none";
-
+    function startIntro() {
         let step = 0;
-        document.getElementById("countdown").innerText = countdownSteps[step];
+        const countdownEl = document.getElementById("countdown");
 
-        // 倒计时
-        const countdownTimer = setInterval(() => {
+        countdownEl.innerText = countdownSteps[step];
+
+        const timer = setInterval(() => {
             step++;
             if (step < countdownSteps.length) {
-                document.getElementById("countdown").innerText = countdownSteps[step];
+                countdownEl.innerText = countdownSteps[step];
             } else {
-                clearInterval(countdownTimer);
-                showPath();
+                clearInterval(timer);
+                enterLoop();
             }
         }, stepDuration);
     }
 
-    function showPath() {
-        const index = Math.floor(Math.random() * paths.length);
+    function enterLoop() {
+        // 切换到路径展示模式
         document.getElementById("title").innerText = "系统日志 · 随机路径";
         document.getElementById("countdown").style.display = "none";
-        document.getElementById("path").innerText = paths[index];
         document.getElementById("path").style.display = "block";
 
-        // 等到本轮结束，再启动下一轮（关键）
-        setTimeout(startCycle, totalCycleTime);
+        // 先生成一次
+        generatePath();
+
+        // 之后稳定轮播
+        setInterval(generatePath, pathInterval);
     }
 
-    // 页面加载启动第一轮
-    startCycle();
+    function generatePath() {
+        const index = Math.floor(Math.random() * paths.length);
+        document.getElementById("path").innerText = paths[index];
+    }
+
+    // 页面首次加载
+    startIntro();
 </script>
 
 </body>
