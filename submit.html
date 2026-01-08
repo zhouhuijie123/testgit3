@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>智慧燃气 · 工单提交</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:radial-gradient(circle at top,#081e30,#030b14);
+    font-family:"Microsoft YaHei",Arial;
+    color:#fff;
+}
+
+/* 倒计时 */
+.timer{
+    position:fixed;
+    top:20px;
+    right:30px;
+    font-size:16px;
+    color:#ffdd88;
+    letter-spacing:1px;
+    opacity:.9;
+}
+
+.panel{
+    width:440px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:18px;
+    padding:36px 40px;
+    box-shadow:0 0 35px rgba(0,153,255,.35);
+}
+.title{
+    text-align:center;
+    font-size:24px;
+    color:#7ecbff;
+    margin-bottom:26px;
+    letter-spacing:2px;
+}
+.item{margin-bottom:20px;}
+.item label{
+    display:block;
+    font-size:14px;
+    opacity:.85;
+    margin-bottom:6px;
+}
+.item input{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+    font-size:16px;
+    text-align:center;
+}
+.btn{
+    width:100%;
+    padding:14px;
+    font-size:18px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    background:linear-gradient(135deg,#00b4ff,#0077ff);
+    color:#fff;
+    font-weight:bold;
+    letter-spacing:2px;
+}
+.hint{
+    margin-top:16px;
+    font-size:12px;
+    opacity:.5;
+    text-align:center;
+}
+
+/* 恢复动画 */
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,10,20,.92);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:99;
+}
+.recover-box{
+    text-align:center;
+    width:320px;
+}
+.recover-title{
+    font-size:22px;
+    margin-bottom:20px;
+    color:#7effa8;
+}
+.bar{
+    height:14px;
+    background:rgba(255,255,255,.15);
+    border-radius:8px;
+    overflow:hidden;
+}
+.bar-inner{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#00ff99,#00cc66);
+    transition:width 2.5s linear;
+}
+.success{
+    display:none;
+    margin-top:22px;
+    font-size:20px;
+    color:#00ff99;
+    font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div class="timer" id="timer">剩余时间：10:00</div>
+
+<div class="panel">
+    <div class="title">虚拟工单提交</div>
+
+    <div class="item">
+        <label>站号</label>
+        <input id="station" placeholder="010507">
+    </div>
+    <div class="item">
+        <label>问题类型</label>
+        <input id="problem" placeholder="数据异常 / 设备异常 / 压力异常">
+    </div>
+    <div class="item">
+        <label>处置类型</label>
+        <input id="action" placeholder="不派单 / 现场处置 / 及时校验模块">
+    </div>
+
+    <button class="btn" id="submitBtn" onclick="submitOrder()">提交工单</button>
+    <div class="hint">请在规定时间内完成工单提交</div>
+</div>
+
+<!-- 成功音效 -->
+<audio id="successAudio" preload="auto">
+    <source src="success.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 恢复动画 -->
+<div class="overlay" id="overlay">
+    <div class="recover-box">
+        <div class="recover-title">系统恢复中…</div>
+        <div class="bar">
+            <div class="bar-inner" id="bar"></div>
+        </div>
+        <div class="success" id="success">
+            系统运行恢复正常<br>🎉 恭喜通关！
+        </div>
+    </div>
+</div>
+
+<script>
+/* 合法范围 */
+const validStations = ["010507","030608","020108","010607"];
+const validProblems = ["数据异常","设备异常","压力异常"];
+const validActions = ["不派单","现场处置","及时校验模块"];
+
+/* 倒计时 10 分钟 */
+let remaining = 600;
+let timer = setInterval(()=>{
+    remaining--;
+    const m = String(Math.floor(remaining/60)).padStart(2,"0");
+    const s = String(remaining%60).padStart(2,"0");
+    document.getElementById("timer").innerText = `剩余时间：${m}:${s}`;
+
+    if(remaining<=0){
+        clearInterval(timer);
+        document.getElementById("submitBtn").disabled = true;
+        alert("操作超时，工单提交失败！");
+    }
+},1000);
+
+function submitOrder(){
+    if(remaining<=0) return;
+
+    const station = station.value.trim();
+    const problem = problem.value.trim();
+    const action = action.value.trim();
+
+    const ok =
+        validStations.includes(station) &&
+        validProblems.includes(problem) &&
+        validActions.includes(action);
+
+    if(ok){
+        clearInterval(timer);
+        showRecovery();
+    }else{
+        alert("填写有误，请填写正确内容！");
+    }
+}
+
+function showRecovery(){
+    const overlay = document.getElementById("overlay");
+    const bar = document.getElementById("bar");
+    const success = document.getElementById("success");
+    const audio = document.getElementById("successAudio");
+
+    overlay.style.display="flex";
+    audio.play().catch(()=>{});
+
+    setTimeout(()=>bar.style.width="100%",100);
+    setTimeout(()=>success.style.display="block",2600);
+}
+</script>
+
+</body>
+</html>
