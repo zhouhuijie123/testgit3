@@ -145,11 +145,6 @@ body{
     <div class="hint">请在 10 分钟内完成工单提交</div>
 </div>
 
-<!-- 成功音效 -->
-<audio id="successAudio" preload="auto">
-    <source src="success.mp3" type="audio/mpeg">
-</audio>
-
 <!-- 成功动画 -->
 <div class="overlay" id="overlay">
     <div class="recover-box">
@@ -164,12 +159,12 @@ body{
 </div>
 
 <script>
-/* ===== 合法值 ===== */
+/* 合法值 */
 const VALID_STATIONS = ["010507","030608","020108","010607"];
 const VALID_PROBLEMS = ["数据异常","设备异常","压力异常"];
 const VALID_ACTIONS  = ["不派单","现场处置","及时校验模块"];
 
-/* ===== 倒计时 ===== */
+/* 倒计时 */
 let remainingSeconds = 600;
 const timerEl = document.getElementById("timer");
 const submitBtn = document.getElementById("submitBtn");
@@ -188,7 +183,7 @@ const countdownTimer = setInterval(() => {
     }
 }, 1000);
 
-/* ===== 提交逻辑 ===== */
+/* 提交逻辑 */
 submitBtn.addEventListener("click", () => {
     if (remainingSeconds <= 0) return;
 
@@ -211,16 +206,13 @@ submitBtn.addEventListener("click", () => {
     showSuccess();
 });
 
-/* ===== 成功动画 ===== */
+/* 成功动画 */
 function showSuccess(){
     const overlay = document.getElementById("overlay");
     const bar = document.getElementById("barInner");
     const successText = document.getElementById("successText");
-    const audio = document.getElementById("successAudio");
 
     overlay.style.display = "flex";
-
-    audio.play().catch(()=>{});
 
     setTimeout(() => {
         bar.style.width = "100%";
